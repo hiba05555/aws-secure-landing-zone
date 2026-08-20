@@ -41,6 +41,8 @@ jobs:
 
       - name: Wait for ECR scan and check for critical vulnerabilities
         run: |
+          sleep 10
+
           aws ecr wait image-scan-complete \
             --repository-name $ECR_REPOSITORY \
             --image-id imageTag=$IMAGE_TAG
@@ -59,7 +61,6 @@ jobs:
           fi
         env:
           IMAGE_TAG: ${{ github.sha }}
-
 
       - name: Force new ECS deployment
         run: |
