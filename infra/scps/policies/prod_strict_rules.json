@@ -1,0 +1,32 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenyDeleteRDSWithoutSnapshot",
+            "Effect": "Deny",
+            "Action": [
+                "rds:DeleteDBInstance",
+                "rds:DeleteDBCluster"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "Bool": {
+                    "rds:SkipFinalSnapshot": "true"
+                }
+            }
+        },
+        {
+            "Sid": "DenyDeleteTaggedProdBuckets",
+            "Effect": "Deny",
+            "Action": [
+                "s3:DeleteBucket"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/Environment": "prod"
+                }
+            }
+        }
+    ]
+}
