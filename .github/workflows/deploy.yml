@@ -21,10 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Debug OIDC token claims
-        run: |
-          curl -sLS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value' | cut -d. -f2 | base64 -d 2>/dev/null | jq .
-
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -42,6 +38,28 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Wait for ECR scan and check for critical vulnerabilities
+        run: |
+          aws ecr wait image-scan-complete \
+            --repository-name $ECR_REPOSITORY \
+            --image-id imageTag=$IMAGE_TAG
+
+          CRITICAL_COUNT=$(aws ecr describe-image-scan-findings \
+            --repository-name $ECR_REPOSITORY \
+            --image-id imageTag=$IMAGE_TAG \
+            --query 'imageScanFindings.findingSeverityCounts.CRITICAL' \
+            --output text)
+
+          echo "Critical vulnerabilities found: $CRITICAL_COUNT"
+
+          if [ "$CRITICAL_COUNT" != "None" ] && [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "::error::Deployment blocked — $CRITICAL_COUNT CRITICAL vulnerabilities found in image"
+            exit 1
+          fi
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+
 
       - name: Force new ECS deployment
         run: |

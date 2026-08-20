@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "github_actions_trust" {
         condition {
             test     = "StringLike"
             variable = "token.actions.githubusercontent.com:sub"
-            values   = ["repo:hiba05555/aws-secure-landing-zone:*"]
+            values   = ["repo:hiba05555*aws-secure-landing-zone*"]
         }
     }
 }
@@ -89,6 +89,17 @@ data "aws_iam_policy_document" "github_actions_permissions" {
             data.terraform_remote_state.compute.outputs.ecs_execution_role_arn,
             data.terraform_remote_state.compute.outputs.ecs_task_role_arn
         ]
+    }
+
+    statement {
+        sid    = "ECRScanRead"
+        effect = "Allow"
+        actions =[
+            "ecr:DescribeImageScanFindings",
+            "ecr:BatchGetImage",
+            "ecr:DescribeImages"
+        ]
+        resources  = [data.terraform_remote_state.compute.outputs.ecr_repo_arn]
     }
 }
 
