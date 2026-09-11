@@ -1,18 +1,16 @@
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "DenyLeaveOrganization",
-            "Effect": "Deny",
-            "Action": [
-                "organizations:LeaveOrganization"
-            ],
-            "Resource": "*",
-            "Condition": {
-                "StringEquals": {
-                    "aws:PrincipalArn": "arn:aws:iam::*:root"
-                }
-            }
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyRootUserActions",
+      "Effect": "Deny",
+      "Action": "*",
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalArn": "arn:aws:iam::*:root"
         }
-    ]
+      }
+    }
+  ]
 }

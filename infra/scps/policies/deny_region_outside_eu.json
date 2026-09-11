@@ -9,6 +9,7 @@
         "organizations:*",
         "cloudfront:*",
         "route53:*",
+        "route53domains:*",
         "sts:*",
         "support:*",
         "waf:*",

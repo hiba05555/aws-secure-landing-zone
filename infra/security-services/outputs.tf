@@ -1,16 +1,8 @@
-output "guarduty_detector_id" {
-    description = "Guarduty detector id in the management account"
-    value       = aws_guardduty_detector.main.id
-}
 
-output "guarduty_detector_arn" {
-    description = "Guarduty detector arn in the management account"
-    value = aws_guardduty_detector.main.arn
-}
 
-output "securityhub_account_id" {
-    description = "Security Hub account id"
-    value = aws_securityhub_account.main.id
+output "aws_securityhub_organization_admin_account" {
+    description = "Security Hub delegated admin account id"
+    value = aws_securityhub_organization_admin_account.delegate.admin_account_id
 }
 
 output "enabled_standards" {

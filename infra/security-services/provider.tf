@@ -18,6 +18,7 @@ terraform {
 }
 
 provider "aws" {
+  alias  = "delegated"
   region  = var.aws_region
   profile = var.aws_profile
 
@@ -27,5 +28,9 @@ provider "aws" {
       ManagedBy   = "terraform"
       Environment = "security-services"
     }
+  }
+
+  assume_role {
+        role_arn = "arn:aws:iam::930628638898:role/OrganizationAccountAccessRole"
   }
 }

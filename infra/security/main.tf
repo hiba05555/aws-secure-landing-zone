@@ -50,6 +50,42 @@ resource "aws_kms_key" "security" {
                       "kms:GrantIsForAWSResource" = "true"
                     }
                 }
+            },
+            {
+                Sid    = "AllowS3Use"
+                Effect = "Allow"
+                Principal = {
+                    Service = "s3.amazonaws.com"
+                }
+                Action =[
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey*",
+                    "kms:DescribeKey"
+                ]
+                Resource = "*"
+                Condition = {
+                    StringEquals = {
+                        "kms:EncryptionContext:aws:s3:arn" = "arn:aws:s3:::atlas-fintech-assets-622532143366"
+                    }
+                }
+            },
+            {
+                Sid    = "AllowCloudFrontServicePricnipal"
+                Effect = "Allow"
+                Principal = {
+                    Service = "cloudfront.amazonaws.com"
+                }
+                Action = [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey*",
+                    "kms:DescribeKey"
+                ]
+                Resource = "*"  
+                Condition = {
+                    StringEquals = {
+                        "AWS:SourceArn" = "arn:aws:cloudfront::622532143366:distribution/ECQFVYBEI6XFU"
+                    }
+                }
             }
         ]
     })
